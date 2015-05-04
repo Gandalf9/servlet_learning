@@ -15,11 +15,16 @@ public class HelloWorldServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
+		String servletContextParam = req.getServletContext().getInitParameter("first_context_param_name");
+		String servletConfigParam = getInitParameter("first_init_param_name");
+		
 		resp.setContentType("text/html");
 		PrintWriter out = resp.getWriter();
 		
 		out.print("<html><body>");
-		out.print("<b>Hello World</b>");
+		out.println("<b>Hello World</b>");
+		out.println("<b>The servlet Context Param value : " + servletContextParam + "</b>");
+		out.println("<b>The servlet Config param value : " + servletConfigParam + "</b>");
 		out.print("</body></html>");
 	}
 }

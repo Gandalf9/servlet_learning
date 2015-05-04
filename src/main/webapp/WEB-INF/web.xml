@@ -4,21 +4,29 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	id="WebApp_ID" version="3.1">
 
-	<!-- 
-	Define our servlet. 
-	servlet-name is used to refer to the serlvet
-	servlet-class is the actual class
-	-->
+	<!-- These are global values that are for all servlets. They are accessible 
+		via the Request.getServletContext().getInit method -->
+	<context-param>
+		<param-name>first_context_param_name</param-name>
+		<param-value>first_context_param_value</param-value>
+	</context-param>
+
+	<!-- Define our servlet. servlet-name is used to refer to the serlvet servlet-class 
+		is the actual class -->
 	<servlet>
 		<servlet-name>helloWorld</servlet-name>
 		<servlet-class>com.yatin.servlet.HelloWorldServlet</servlet-class>
-		
-		<!-- 
-		the load-on-startup will tell the container to load the servlet as the web app starts
-		rather than waiting for the first request to come in. Servlets 
-		with higher numbers get loaded after servlets with lower numbers  
-		-->
-		
+
+		<!-- These are servlet specific values that are available via the getInitParameter() 
+			method. Part of ServletConfig -->
+		<init-param>
+			<param-name>first_init_param_name</param-name>
+			<param-value>first_init_param_value</param-value>
+		</init-param>
+
+		<!-- the load-on-startup will tell the container to load the servlet as 
+			the web app starts rather than waiting for the first request to come in. 
+			Servlets with higher numbers get loaded after servlets with lower numbers -->
 		<load-on-startup>0</load-on-startup>
 	</servlet>
 
