@@ -1,12 +1,32 @@
-*.class
+Function/adm_service_rest/src/main/resources/windows.properties
+######################
+# Directories
+######################
+/build/
+/bin/
+target/
+/logs/
+ 
+######################
+# OS Files
+######################
+.DS_Store
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+######################
+# Eclipse
+######################
+.project
+.metadata
+.classpath
+.settings/
 
-# Package Files #
-*.jar
-*.war
-*.ear
+######################
+# IntelliJ
+######################
+.idea
+*.iml
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+######################
+# Git
+######################
+.gitignore

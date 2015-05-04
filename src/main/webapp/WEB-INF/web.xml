@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID" version="3.1">
+
+	<!-- 
+	Define our servlet. 
+	servlet-name is used to refer to the serlvet
+	servlet-class is the actual class
+	-->
+	<servlet>
+		<servlet-name>helloWorld</servlet-name>
+		<servlet-class>com.yatin.servlet.HelloWorldServlet</servlet-class>
+		
+		<!-- 
+		the load-on-startup will tell the container to load the servlet as the web app starts
+		rather than waiting for the first request to come in. Servlets 
+		with higher numbers get loaded after servlets with lower numbers  
+		-->
+		
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>helloWorld</servlet-name>
+		<url-pattern>/hello</url-pattern>
+	</servlet-mapping>
+
+</web-app>
