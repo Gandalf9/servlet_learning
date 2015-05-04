@@ -11,28 +11,4 @@
 		<param-value>first_context_param_value</param-value>
 	</context-param>
 
-	<!-- Define our servlet. servlet-name is used to refer to the serlvet servlet-class 
-		is the actual class -->
-	<servlet>
-		<servlet-name>helloWorld</servlet-name>
-		<servlet-class>com.yatin.servlet.HelloWorldServlet</servlet-class>
-
-		<!-- These are servlet specific values that are available via the getInitParameter() 
-			method. Part of ServletConfig -->
-		<init-param>
-			<param-name>first_init_param_name</param-name>
-			<param-value>first_init_param_value</param-value>
-		</init-param>
-
-		<!-- the load-on-startup will tell the container to load the servlet as 
-			the web app starts rather than waiting for the first request to come in. 
-			Servlets with higher numbers get loaded after servlets with lower numbers -->
-		<load-on-startup>0</load-on-startup>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>helloWorld</servlet-name>
-		<url-pattern>/hello</url-pattern>
-	</servlet-mapping>
-
 </web-app>
