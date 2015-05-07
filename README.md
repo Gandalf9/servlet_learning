@@ -11,3 +11,4 @@ Git project for learning about servlets
 
 * `2f7b7fba` - Removed the web.xml file and introduced the spring `WebApplicationInitializer`
 
+* `5094190f` - Added restEasy support and SLF4J support
