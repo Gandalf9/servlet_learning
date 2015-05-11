@@ -1,7 +1,6 @@
 package com.yatin.resource;
 
-import java.util.Set;
-
+import javax.annotation.PostConstruct;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,19 +25,35 @@ public class BookResource {
 	
 	private final Logger logger = LoggerFactory.getLogger(BookResource.class);
 
-	@Autowired
 	private BookService service;
 	
-	public BookResource() {
+	@Autowired
+	public BookResource(BookService bookService) {
+		this.service = bookService;
+	}
+	
+	/*
+	 * We use the @PostConstruct annotation here to set up the service with a book.
+	 * This current code can go into the current constructor as well.
+	 * 
+	 * However if we instead had the BookService autowired as a field member rather than in the constructor as above:
+	 * 
+	 * @Autowired
+	 * private BookService service;
+	 * 
+	 * then putting the code below in the constructor would not work as the BookService may not have been binded to 
+	 * this class when the constructor is invoked.
+	 */
+	@PostConstruct
+	public void init() {
+		Book firstBook = new Book(1, "yatin", "the first book", "this is the first book");
+		service.put(1, firstBook);
 	}
 	
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getBook(@PathParam("id") String id, @Context UriInfo info) {
-		
-		Book firstBook = new Book(1, "yatin", "the first book", "this is the first book");
-		service.put(1, firstBook);
 		
 		int bookId = Integer.parseInt(id);
 		Book result = service.get(bookId);
