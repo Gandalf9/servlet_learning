@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36}.%M\(%line\) - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <logger name="org.springframework" additivity="false">
+    	<level value="DEBUG" />
+        <appender-ref ref="consoleAppender" />
+    </logger>
+
+    <root level="ALL">
+        <appender-ref ref="consoleAppender" />
+    </root>
+</configuration>
