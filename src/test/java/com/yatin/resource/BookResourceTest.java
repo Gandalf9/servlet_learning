@@ -1,97 +1,92 @@
 package com.yatin.resource;
 
+import static javax.ws.rs.core.HttpHeaders.LOCATION;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.mock.MockDispatcherFactory;
-import org.jboss.resteasy.mock.MockHttpRequest;
-import org.jboss.resteasy.mock.MockHttpResponse;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yatin.domain.Book;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.yatin.config.BaseFeatureTest;
+import com.yatin.domain.BookV1;
+import com.yatin.domain.BookV2;
 import com.yatin.service.BookService;
 
-@RunWith(MockitoJUnitRunner.class)
-public class BookResourceTest {
-	
-	@Mock
-    private BookService service;
+public class BookResourceTest extends BaseFeatureTest {
 	
 	@Test
-	public void testGetSingleBook() throws Exception {
-		
-		Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
-		dispatcher.getRegistry().addSingletonResource(new BookResource(service));
-		
-		Book firstBook = new Book(1, "yatin", "the first book", "this is the first book");
-		
-		given(service.get(1)).willReturn(firstBook);
-		
-		MockHttpRequest request = MockHttpRequest.get("/books/1");
-		request.contentType(MediaType.APPLICATION_JSON);
-		request.accept(MediaType.APPLICATION_JSON);
-		
-        MockHttpResponse response = new MockHttpResponse();
-        
-        dispatcher.invoke(request, response);
-        
-        assertThat(response.getStatus(), is(HttpServletResponse.SC_OK));
-        response.getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        Book result = mapper.readValue(response.getOutput(), Book.class);
-        
-        assertThat(result.getIsbn(), is(1));
-	}
-	
+    public void shouldGetVersion1() throws UnirestException, IOException {
+
+        HttpResponse<String> httpResponse = get("/v1/books/1")
+                .header("Accept", MediaType.APPLICATION_JSON)
+                .asString();
+
+		BookV1 result = mapper.readValue(httpResponse.getBody().toString(), BookV1.class);
+
+		assertThat(result.getName(), is(BookService.THE_AUTHOR));
+		assertThat(result.getTitle(), is(BookService.THE_TILTE));
+    }
 	
 	@Test
-	public void testGetMultipleBooks() throws Exception {
+    public void shouldGetVersion2() throws UnirestException, IOException {
+
+        HttpResponse<String> httpResponse = get("/v2/books/1")
+                .header("Accept", MediaType.APPLICATION_JSON)
+                .asString();
+
+		BookV2 result = mapper.readValue(httpResponse.getBody().toString(), BookV2.class);
+
+		assertThat(result.getAuthor(), is(BookService.THE_NAME));
+		assertThat(result.getIsbn(), is(BookService.ISBN));
+    }
+	
+	@Test
+    public void shouldPostVersion1() throws UnirestException, IOException {
+
+		String name = "name";
+		String title = "title";
 		
-		Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
-		dispatcher.getRegistry().addSingletonResource(new BookResource(service));
+		BookV1 book = new BookV1(name,title);
 		
-		Book book1 = new Book(1, "yatin", "the 1 book", "this is the 1 book");
-		Book book2 = new Book(2, "yatin", "the 2 book", "this is the 2 book");
-		Book book3 = new Book(3, "yatin", "the 3 book", "this is the 3 book");
-		
-		Collection<Book> bookCollection = new ArrayList<>();
-		bookCollection.add(book1);
-		bookCollection.add(book2);
-		bookCollection.add(book3);
-		
-		given(service.values()).willReturn(bookCollection);
-		
-		MockHttpRequest request = MockHttpRequest.get("/books");
-		request.contentType(MediaType.APPLICATION_JSON);
-		request.accept(MediaType.APPLICATION_JSON);
-		
-        MockHttpResponse response = new MockHttpResponse();
+        HttpResponse<String> httpResponse = post("/v1/books")
+                .header("Content-type", MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(book))
+                .asString();
+
+        BookV1 result = mapper.readValue(httpResponse.getBody().toString(), BookV1.class);
         
-        dispatcher.invoke(request, response);
+        assertThat(result.getName(), is(name));
+        assertThat(result.getTitle(), is(title));
         
-        assertThat(response.getStatus(), is(HttpServletResponse.SC_OK));
-        response.getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
+        assertThat(httpResponse.getStatus(), is(CREATED.getStatusCode()));
+        assertThat(httpResponse.getHeaders().getFirst(LOCATION.toLowerCase()), is(baseUrl + "/v1/books/" + result.getId()));
+    }
+	
+	@Test
+    public void shouldPostVersion2() throws UnirestException, IOException {
+
+		String isbn = "isbn";
+		String author = "auth";
+		
+		BookV2 book = new BookV2(isbn, author);
+		
+        HttpResponse<String> httpResponse = post("/v2/books")
+                .header("Content-type", MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(book))
+                .asString();
         
-        /*
-    	 * Note here that we are using TypeReference to infer the type of the returned result
-    	 */
-        List<Book> result = mapper.readValue(response.getOutput(), new TypeReference<List<Book>>() { });
+        BookV2 result = mapper.readValue(httpResponse.getBody().toString(), BookV2.class);
         
-        assertThat(result.size(), is(3));
-	}
+        assertThat(result.getIsbn(), is(isbn));
+        assertThat(result.getAuthor(), is(author));
+        
+        assertThat(httpResponse.getStatus(), is(CREATED.getStatusCode()));
+        assertThat(httpResponse.getHeaders().getFirst(LOCATION.toLowerCase()), is(baseUrl + "/v2/books/" + result.getId()));
+    }
 }
